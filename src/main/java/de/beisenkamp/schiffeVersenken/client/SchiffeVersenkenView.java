@@ -1,7 +1,10 @@
 package de.beisenkamp.schiffeVersenken.client;
 
 import sum.ereignis.EBAnwendung;
+import sum.komponenten.Etikett;
 import sum.komponenten.Knopf;
+import sum.komponenten.Textfeld;
+import sum.komponenten.Zeilenbereich;
 
 public class SchiffeVersenkenView extends EBAnwendung {
 
@@ -15,15 +18,30 @@ public class SchiffeVersenkenView extends EBAnwendung {
 
     private final Knopf knopfVerbinden;
     private final Spielfeld spielfeld;
+    private final Zeilenbereich zeilenbereichMeldung;
+    private final Etikett etikettBenutzername;
+    private final Textfeld textfeldBenutzername;
+    private final Knopf knopfAnmeldung;
 
     public SchiffeVersenkenView(int pBreite, int pHoehe, ClientConfig pConfig) {
         super(pBreite, pHoehe);
         config = pConfig;
 
-        knopfVerbinden = new Knopf(10, 10, 70, 20, "Verbinden");
+        knopfVerbinden = new Knopf(10, 10, 120, 30, "Verbinden");
         knopfVerbinden.setzeBearbeiterGeklickt("bearbeiteVerbindeMitServer");
-        spielfeld = new Spielfeld(10, 40, 22, 12, 12, this);
+
+        knopfAnmeldung = new Knopf(140, 10, 120,30, "Anmeldung");
+        knopfAnmeldung.setzeBearbeiterGeklickt("bearbeiteAnmeldung");
+        knopfAnmeldung.deaktiviere();
+        etikettBenutzername = new Etikett(270, 10, 80, 30, "Benutzername:");
+        textfeldBenutzername = new Textfeld(360,10,150, 30, "");
+
+        zeilenbereichMeldung = new Zeilenbereich(10, 50, 300, 100, "");
+        zeilenbereichMeldung.deaktiviere();
+
+        spielfeld = new Spielfeld(320, 50, 22, 12, 12, this);
         spielfeld.setzeBearbeiterMarkierungGeaendert("bearbeiteSpielfeldKlick");
+        spielfeld.deaktiviere();
 
     }
     /**********************
@@ -31,12 +49,31 @@ public class SchiffeVersenkenView extends EBAnwendung {
      **********************/
 
     public void bearbeiteVerbindeMitServer() {
+        if(client != null && client.isConnected()) {
+            client.close();
+        }
         SchiffeVersenkenClient client = new SchiffeVersenkenClient(config.getServerIp(), config.getServerPort(), this);
+        if(client.isConnected()) {
+            knopfVerbinden.deaktiviere();
+            knopfAnmeldung.aktiviere();
+        }
     }
 
     public void bearbeiteSpielfeldKlick() {
         // Ausgabe des angeklickten Feldes als Beispiel:
         System.out.println("Zeile1: "+spielfeld.getKlickZeile1()+" Spalte1: "+spielfeld.getKlickSpalte1());
         System.out.println("Zeile2: "+spielfeld.getKlickZeile2()+" Spalte2: "+spielfeld.getKlickSpalte2());
+    }
+
+    /************
+     * Methoden *
+     ************/
+
+    public void zeigeMeldung(String pMeldung) {
+        zeilenbereichMeldung.haengeAn(pMeldung);
+    }
+
+    public void anmeldungErfolgreich() {
+        //todo
     }
 }
