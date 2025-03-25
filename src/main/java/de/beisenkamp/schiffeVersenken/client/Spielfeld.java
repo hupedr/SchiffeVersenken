@@ -65,7 +65,7 @@ public class Spielfeld extends Tabelle {
     }
 
     public int getKlickSpalte1() {
-        return klickSpalte1;
+        return klickSpalte1-1;
     }
 
     public int getKlickZeile2() {
@@ -73,7 +73,7 @@ public class Spielfeld extends Tabelle {
     }
 
     public int getKlickSpalte2() {
-        return klickSpalte2;
+        return klickSpalte2-1;
     }
 
 }

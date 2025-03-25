@@ -41,7 +41,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
 
         spielfeld = new Spielfeld(320, 50, 22, 12, 12, this);
         spielfeld.setzeBearbeiterMarkierungGeaendert("bearbeiteSpielfeldKlick");
-        spielfeld.deaktiviere();
+        //spielfeld.deaktiviere();
 
     }
     /**********************
