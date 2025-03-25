@@ -76,4 +76,24 @@ public class SchiffeVersenkenView extends EBAnwendung {
     public void anmeldungErfolgreich() {
         //todo
     }
+
+    public void startSchiffeSetzen()
+    {
+
+    }
+
+    public void beginneZug()
+    {
+
+    }
+
+    public void ende()
+    {
+
+    }
+
+    public void zeigeSpielfeld(int [][] pSpielfeld)
+    {
+
+    }
 }
