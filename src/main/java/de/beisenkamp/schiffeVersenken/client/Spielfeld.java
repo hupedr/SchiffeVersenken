@@ -15,7 +15,9 @@ public class Spielfeld extends Tabelle {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                view.bearbeiteSpielfeldKlick();
+                if(istAktiv()) {
+                    view.bearbeiteSpielfeldKlick();
+                }
             }
         });
         for(int i = 1; i <= spaltenanzahl(); i++) {
