@@ -35,4 +35,19 @@ public class SchiffeVersenkenClient extends Client {
         }
     }
 
+    public void schießen(int pX, int pY)
+    {
+
+    }
+
+    public void schiffEinfuegen(int pXS, int pYS, int pXE, int pYE)
+    {
+
+    }
+
+    public void meldeAn()
+    {
+        
+    }
+
 }
