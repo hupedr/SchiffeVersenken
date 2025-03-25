@@ -23,6 +23,8 @@ public class SchiffeVersenkenView extends EBAnwendung {
     private final Textfeld textfeldBenutzername;
     private final Knopf knopfAnmeldung;
 
+    private boolean platziereSchiffe;
+
     public SchiffeVersenkenView(int pBreite, int pHoehe, ClientConfig pConfig) {
         super(pBreite, pHoehe);
         config = pConfig;
@@ -63,6 +65,15 @@ public class SchiffeVersenkenView extends EBAnwendung {
         // Ausgabe des angeklickten Feldes als Beispiel:
         System.out.println("Zeile1: "+spielfeld.getKlickZeile1()+" Spalte1: "+spielfeld.getKlickSpalte1());
         System.out.println("Zeile2: "+spielfeld.getKlickZeile2()+" Spalte2: "+spielfeld.getKlickSpalte2());
+        if(platziereSchiffe)
+        {
+            if(spielfeld.getKlickSpalte1() = spielfeld.getKlickSpalte2())
+            {
+                
+            }
+        }
+
+        if()
     }
 
     /************
@@ -79,8 +90,11 @@ public class SchiffeVersenkenView extends EBAnwendung {
 
     public void startSchiffeSetzen()
     {
-
+        platziereSchiffe = true;
+        zeigeMeldung("Bitte platzieren Sie Ihre Schiffe.");
+        spielfeld.aktiviere();
     }
+
 
     public void beginneZug()
     {
@@ -89,11 +103,18 @@ public class SchiffeVersenkenView extends EBAnwendung {
 
     public void ende()
     {
-
+        zeigeMeldung("Ihr  Zug ist zu Ende.");
+        spielfeld.deaktiviere();
     }
 
-    public void zeigeSpielfeld(int [][] pSpielfeld)
+    public void zeigeSpielfeld(String [][] pSpielfeld)
     {
-
+        for(int i=0; i < spielfeld.hoehe(); i++)
+        {
+            for(int j=0; j < spielfeld.breite(); j++)
+            {
+                spielfeld.setzeInhaltAn( pSpielfeld[i][j], i, j);
+            }
+        }
     }
 }
