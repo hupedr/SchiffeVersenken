@@ -18,8 +18,8 @@ public class Spielfeld
     // KEINE SCHIFF = 0    SCHIFF = 1
     // (x/y)   <- Position
 
-    //                             OBEN ZAHLEN ; SEITE BUCHSTABEN
-    public void schiffPlatzieren(String Position1, String Position2)
+    //                             x-Koo ; SEITE BUCHSTABEN
+    public void schiffPlatzieren(String Position1, String Position2, int pLaenge)
     {
         //Koordinaten in Int umwandeln ü
         int pos1x = (int)Position1.charAt(1);
