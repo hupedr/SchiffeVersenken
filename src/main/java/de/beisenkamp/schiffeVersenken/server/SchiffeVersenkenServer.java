@@ -2,7 +2,6 @@ package de.beisenkamp.schiffeVersenken.server;
 import de.beisenkamp.schiffeVersenken.Protocol;
 import nrw.abiturklassen.netz.Server;
 public class SchiffeVersenkenServer extends Server {
-    Protocol protocol;
 
     Spieler spieler1;
 
@@ -13,10 +12,6 @@ public class SchiffeVersenkenServer extends Server {
 
     }
 
-    public SchiffeVersenkenServer()
-    {
-        protocol = new Protocol();
-    }
 
     public void User(String name, String ip, int port)
     {
@@ -51,7 +46,28 @@ public class SchiffeVersenkenServer extends Server {
 
     public void SchiffePlatzieren(String pos1, String pos2)
     {
+        if(spieler1.ip == ip && spieler1.port == port)
+        {
+            int i = spieler1.spielfeld.schiffPlatzieren(pos1,pos2);
+            if(i== 1)
+            {
+                send(ip,port,Protocol.SCHIFF+Protocol.SEPERATOR+Protocol.OK+Protocol.SEPERATOR+"Noch <"+ (10-spieler1.spielfeld.anzahlSchiffe)+"> Schiffe setzen.");
+            }
 
+            if (i == 2)
+            {
+                send(ip, port, Protocol.SCHIFF + Protocol.SEPERATOR + Protocol.ERROR + Protocol.SEPERATOR + "Platz bereits belegt.");
+            }
+
+            if(i==3)
+            {
+
+            }
+        }
+        else
+        {
+            spieler2.spielfeld.schiffPlatzieren(pos1,pos2);
+        }
     }
 
     public void Zug()
@@ -83,7 +99,7 @@ public class SchiffeVersenkenServer extends Server {
 
     public void processMessage(String pIP, int pPort, String message)
     {
-        String[] nachricht = message.split(Protocol.SEPERATOR;
+        String[] nachricht = message.split(Protocol.SEPERATOR);
         switch (nachricht[0]) {
             case Protocol.USER:
                 User(nachricht[1],pIP,pPort);
