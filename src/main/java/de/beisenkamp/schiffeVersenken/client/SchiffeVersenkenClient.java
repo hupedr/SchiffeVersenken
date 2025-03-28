@@ -3,6 +3,8 @@ package de.beisenkamp.schiffeVersenken.client;
 import de.beisenkamp.schiffeVersenken.Protocol;
 import nrw.abiturklassen.netz.Client;
 
+import java.util.Arrays;
+
 
 public class SchiffeVersenkenClient extends Client {
 
@@ -70,32 +72,39 @@ public class SchiffeVersenkenClient extends Client {
                 view.ende();
                 break;
             case Protocol.SPIELFELD:
-                view.zeigeSpielfeld();
+                bearbeiteSendeSpielfeld(Arrays.copyOfRange(nachrichtTeile,1,nachrichtTeile.length));
                 break;
         }
     }
 
     private void bearbeiteSendeSpielfeld(String [] pSpielfeld)
     {
-        for (int i = 1, i < pSpielfeld.length, i++)
+        String [][] spielfeld = new String[pSpielfeld.length][pSpielfeld.length];
+        for (int i = 0; i < pSpielfeld.length; i++)
         {
-            String [] spielfeldTeile = pSpielfeld.split("|");
+            String [] spielfeldZeile = pSpielfeld [i].split("|");
+            for (int j = 0; j < spielfeldZeile.length; j++)
+            {
+                spielfeld [i][j] = spielfeldZeile[j];
+            }
+
         }
+        view.zeigeSpielfeld(spielfeld);
     }
 
     public void schießen(int pX, int pY)
     {
-
+        this.send(Protocol.SCHUSS + Protocol.SEPARATOR + pX + "|" + pY);
     }
 
     public void schiffEinfuegen(int pXS, int pYS, int pXE, int pYE)
     {
-
+        this.send(Protocol.SCHIFF + Protocol.SEPARATOR + pXS + "|" + pYS + Protocol.SEPARATOR + pXE + "|" + pYE);
     }
 
-    public void meldeAn()
+    public void meldeAn(String pName)
     {
-        
+        this.send(Protocol.USER + Protocol.SEPARATOR + pName);
     }
 
 }
