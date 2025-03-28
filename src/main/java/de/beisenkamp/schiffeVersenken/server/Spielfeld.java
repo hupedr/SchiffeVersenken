@@ -50,11 +50,11 @@ public class Spielfeld
         }
 
     }
-
+    //verarbeitet den Schuss
     public boolean verarbeiteSchuss(int pX, int pY)
     {
         schiffliste.toFirst();
-        schussliste.append(pX+"|"+pY);
+        schussliste.append(pX+"|"+pY); //fügt den Schuss zur Schussliste hinzu
         while(schiffliste.hasAccess())
         {
             Schiff schiff = schiffliste.getContent();

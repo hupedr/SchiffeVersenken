@@ -30,7 +30,7 @@ public class Schiff {
     public int getSchiffslaenge() {
         return schiffslaenge;
     }
-
+    //setzt die Arrayfelder
     public void treffer(int pX, int pY)
     {
         if(horizontal)
