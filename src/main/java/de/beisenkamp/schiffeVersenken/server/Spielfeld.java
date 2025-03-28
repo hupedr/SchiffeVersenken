@@ -19,7 +19,7 @@ public class Spielfeld
     // (x/y)   <- Position
 
     //                             x-Koo ; SEITE BUCHSTABEN
-    public void schiffPlatzieren(String Position1, String Position2, int pLaenge)
+    public int schiffPlatzieren(String Position1, String Position2)
     {
         //Koordinaten in Int umwandeln ü
         int pos1x = (int)Position1.charAt(1);
