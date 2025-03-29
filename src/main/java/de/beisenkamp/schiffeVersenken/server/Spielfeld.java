@@ -1,11 +1,10 @@
 package de.beisenkamp.schiffeVersenken.server;
-
 import nrw.abiturklassen.datenstruktur.linear.List;
-
 public class Spielfeld
 {
     List<Schiff> schiffliste;
     List<String> schussliste;
+    int anzahlSchiffe;
     public Spielfeld()
     {
         schiffliste = new List<>();
@@ -36,13 +35,32 @@ public class Spielfeld
         }
         if(pos1y==pos2y)
         {
-            schiffliste.append(new Schiff(pos1x, pos1y, pos1x-pos2x+1, true));
-            return 1;
+            int pLaenge = pos1x-pos2x+1;
+            //Länge muss <= 5 sein
+            if(pLaenge <= 5)
+            {
+                schiffliste.append(new Schiff(pos1x, pos1y, pLaenge, true));
+                anzahlSchiffe++;
+                return 1;
+            }
+            else
+            {
+                return 3;
+            }
         }
         else if(pos1x==pos2x)
         {
-            schiffliste.append(new Schiff(pos1x, pos1y, pos1y-pos2y+1, false));
-            return 1;
+            int pLaenge = pos1y - pos2y + 1;
+            //Länge muss <= 5 sein
+            if(pLaenge <= 5) {
+                schiffliste.append(new Schiff(pos1x, pos1y, pLaenge, false));
+                anzahlSchiffe++;
+                return 1;
+            }
+            else
+            {
+                return 3;
+            }
         }
         else
         {
@@ -51,8 +69,10 @@ public class Spielfeld
 
     }
     //verarbeitet den Schuss
-    public boolean verarbeiteSchuss(int pX, int pY)
+    public int verarbeiteSchuss(int pX, int pY)
     {
+        //Rückgabewert: 1=versnkt, 2= getroffen, 3= nicht getroffen
+
         schiffliste.toFirst();
         schussliste.append(pX+"|"+pY); //fügt den Schuss zur Schussliste hinzu
         while(schiffliste.hasAccess())
@@ -63,7 +83,11 @@ public class Spielfeld
                 if(schiff.getX()>=pX && schiff.getX()-(schiff.getSchiffslaenge()-1)<=pX && pY == schiff.getY())
                 {
                     schiff.treffer(pX, pY);
-                    return true;
+                    if(schiff.versenkt)
+                    {
+                        return 1;
+                    }
+                    return 2;
                 }
             }
             else
@@ -71,11 +95,16 @@ public class Spielfeld
                 if(schiff.getY()>=pY && schiff.getY()-(schiff.getSchiffslaenge()-1)<=pY && pX == schiff.getX())
                 {
                     schiff.treffer(pX, pY);
-                    return true;
+                    if(schiff.versenkt)
+                    {
+                        return 1;
+                    }
+                    return 2;
                 }
             }
 
         }
-        return false;
+        return 3;
     }
+
 }

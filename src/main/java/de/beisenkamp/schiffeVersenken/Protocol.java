@@ -32,6 +32,8 @@ public class Protocol
      */
     public static final String ANMELDUNG = "ANMELDUNG";
 
+    public static final String SEPARATOR = ":";
+
     public static final String START = "START";
 
     public static final String SCHIFF = "SCHIFF";
