@@ -1,11 +1,16 @@
 package de.beisenkamp.schiffeVersenken.server;
 import de.beisenkamp.schiffeVersenken.Protocol;
 import nrw.abiturklassen.netz.Server;
+
+import javax.swing.*;
+
 public class SchiffeVersenkenServer extends Server {
 
     Spieler spieler1;
 
     Spieler spieler2;
+
+    Boolean Spieler1Zug = false;
 
     public SchiffeVersenkenServer(int pPort)
     {
@@ -25,19 +30,19 @@ public class SchiffeVersenkenServer extends Server {
             if (spieler1.port == port && spieler1.ip == ip)
             {
                 spieler1.setName(name);
-                send(ip, port, "ANMELDUNG:OK:Angemeldet mit Benutzername <"+name+">.");
+                send(ip, port, Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.OK+Protocol.SEPARATOR+"Angemeldet mit Benutzername <"+name+">.");
                 Spielstart();
             }
             else
             {
-                    spieler2.setName(name);
-                    send(ip, port, "ANMELDUNG:OK:Angemeldet mit Benutzername <"+name+">.");
-                    Spielstart();
+                spieler2.setName(name);
+                send(ip, port, Protocol.ANMELDUNG + Protocol.SEPARATOR + Protocol.OK + Protocol.SEPARATOR + "Angemeldet mit Benutzername <"+name+">.");
+                Spielstart();
             }
         }
         else
         {
-            send(ip,port,"ANMELDUNG:ERR:Name <"+name+"> ist bereits vergeben.");
+            send(ip,port,Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.ERROR+Protocol.SEPARATOR+"Name <"+name+"> ist bereits vergeben.");
         }
     }
 
@@ -55,9 +60,15 @@ public class SchiffeVersenkenServer extends Server {
 
 
 
-    //TODO: - bei Schiffplatzieren noch machen, wenn alle Schiffe platziert wurden, alaso dass es dann zu zug weiter geht
-    //      - Methoden: Zug, ende, closingConnection
+    //TODO: - Feld weiter schicken???
     //      - Fehler suchen :(
+
+
+
+
+
+
+
 
 
 
@@ -100,11 +111,28 @@ public class SchiffeVersenkenServer extends Server {
                 send(ip,port,Protocol.SCHIFF+Protocol.SEPARATOR+Protocol.ERROR+Protocol.SEPARATOR+"Größe nicht erlaubt");
             }
         }
+        //Alle schiffe gesetzt? Dann geht es los!
+
+        if(spieler1.spielfeld.anzahlSchiffe == 10 && spieler2.spielfeld.anzahlSchiffe == 10)
+        {
+            Zug();
+        }
+
+
     }
 
     public void Zug()
     {
-
+        if(!Spieler1Zug)
+        {
+            Spieler1Zug = true;
+            send(spieler1.ip,spieler1.port,Protocol.ZUG);
+        }
+        else
+        {
+            Spieler1Zug = false;
+            send(spieler2.ip,spieler2.port,Protocol.ZUG);
+        }
     }
 
     public void Schuss(String pos, String ip, int port)
@@ -162,6 +190,9 @@ public class SchiffeVersenkenServer extends Server {
                 }
             }
         }
+        //Zug beendet
+        Zug();
+
     }
 
     public void endeTesten()
@@ -180,7 +211,7 @@ public class SchiffeVersenkenServer extends Server {
         }
         if(versenkteSchiffe == 10)
         {
-            ende();
+            ende(spieler1);
         }
         //Spieler 2
         versenkteSchiffe = 0;
@@ -194,13 +225,13 @@ public class SchiffeVersenkenServer extends Server {
         }
         if(versenkteSchiffe == 10)
         {
-            ende();
+            ende(spieler2);
         }
     }
 
-    public void ende()
+    public void ende(Spieler pSpieler)
     {
-
+        sendToAll(Protocol.ENDE+Protocol.SEPARATOR+" "+pSpieler.name + " hat gewonnen.");
     }
 
 
@@ -213,8 +244,7 @@ public class SchiffeVersenkenServer extends Server {
                 spieler2 = new Spieler(pIP, pPort);
             } else {
                 //ERROR MESSAGE
-                send(pIP, pPort, "ANMELDUNG:ERR:Server ist voll.");
-
+                send(pIP, pPort, Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.ERROR+Protocol.SEPARATOR+"Server ist voll.");
             }
         }
     }
@@ -236,7 +266,15 @@ public class SchiffeVersenkenServer extends Server {
         }
     }
 
-    public void processClosingConnection(String s, int i) {
-
+    public void processClosingConnection(String pIP, int pPort)
+    {
+        if (spieler1.ip==pIP && spieler1.port == pPort)
+        {
+            spieler1 = null;
+        }
+        if (spieler2.ip==pIP && spieler2.port == pPort)
+        {
+            spieler2 = null;
+        }
     }
 }
