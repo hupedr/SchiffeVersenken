@@ -6,6 +6,7 @@ public class Spielfeld
     List<String> schussliste;
     int anzahlSchiffe;
     int feld[][];
+
     public Spielfeld()
     {
         schiffliste = new List<>();
