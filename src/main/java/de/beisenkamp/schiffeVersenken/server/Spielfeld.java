@@ -107,4 +107,18 @@ public class Spielfeld
         return 3;
     }
 
+    /** 1 = Schiff bereit versenkt
+     * 2 = Schiff getroffen
+     * 3 = Schiff
+     * 4 = Fehlschuss
+     */
+
+    public void getSpielfeld() {
+        int feld[][] = new int[9][9];
+        for (int i = 0; i < feld.length; i++) {
+            for (int j = 0; j < feld.length; j++) {
+
+            }
+        }
+    }
 }
