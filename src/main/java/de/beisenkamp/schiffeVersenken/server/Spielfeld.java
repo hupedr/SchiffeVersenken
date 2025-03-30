@@ -5,10 +5,12 @@ public class Spielfeld
     List<Schiff> schiffliste;
     List<String> schussliste;
     int anzahlSchiffe;
+    int feld[][];
     public Spielfeld()
     {
         schiffliste = new List<>();
         schussliste = new List<>();
+        feld = new int[9][9];
     }
 
 
@@ -116,8 +118,8 @@ public class Spielfeld
      * 4 = Fehlschuss
      */
 
-    public void getSpielfeld() {
-        int feld[][] = new int[9][9];
+    public void befuelleSpielfeld() {
+
         for (int i = 0; i < feld.length; i++) {
             for (int j = 0; j < feld.length; j++)
             {
