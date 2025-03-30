@@ -102,12 +102,15 @@ public class Spielfeld
                     return 2;
                 }
             }
+            schiffliste.next();
 
         }
         return 3;
     }
 
-    /** 1 = Schiff bereit versenkt
+    /**
+     * 0 = Nichts
+     * 1 = Schiff bereit versenkt
      * 2 = Schiff getroffen
      * 3 = Schiff
      * 4 = Fehlschuss
@@ -116,8 +119,24 @@ public class Spielfeld
     public void getSpielfeld() {
         int feld[][] = new int[9][9];
         for (int i = 0; i < feld.length; i++) {
-            for (int j = 0; j < feld.length; j++) {
+            for (int j = 0; j < feld.length; j++)
+            {
+                feld[i][j] = 0;
 
+                //Schiffüberprüfung
+                while(schiffliste.hasAccess())
+                {
+                    feld [i] [j] = schiffliste.getContent().getZustand(i, j);
+                    schiffliste.next();
+                }
+                while(schussliste.hasAccess())
+                {
+
+                    if(verarbeiteSchuss(schussliste.getContent().charAt(0), schussliste.getContent().charAt(2))==3)
+                    {
+                        feld [i] [j] = 4;
+                    }
+                }
             }
         }
     }
