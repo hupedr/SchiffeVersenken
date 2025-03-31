@@ -23,6 +23,8 @@ public class SchiffeVersenkenView extends EBAnwendung {
     private final Textfeld textfeldBenutzername;
     private final Knopf knopfAnmeldung;
 
+    private boolean platziereSchiffe;
+
     public SchiffeVersenkenView(int pBreite, int pHoehe, ClientConfig pConfig) {
         super(pBreite, pHoehe);
         config = pConfig;
@@ -41,7 +43,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
 
         spielfeld = new Spielfeld(320, 50, 22, 12, 12, this);
         spielfeld.setzeBearbeiterMarkierungGeaendert("bearbeiteSpielfeldKlick");
-        //spielfeld.deaktiviere();
+        spielfeld.deaktiviere();
 
     }
     /**********************
@@ -53,7 +55,8 @@ public class SchiffeVersenkenView extends EBAnwendung {
             client.close();
         }
         SchiffeVersenkenClient client = new SchiffeVersenkenClient(config.getServerIp(), config.getServerPort(), this);
-        if(client.isConnected()) {
+        if(client.isConnected())
+        {
             knopfVerbinden.deaktiviere();
             knopfAnmeldung.aktiviere();
         }
@@ -63,6 +66,29 @@ public class SchiffeVersenkenView extends EBAnwendung {
         // Ausgabe des angeklickten Feldes als Beispiel:
         System.out.println("Zeile1: "+spielfeld.getKlickZeile1()+" Spalte1: "+spielfeld.getKlickSpalte1());
         System.out.println("Zeile2: "+spielfeld.getKlickZeile2()+" Spalte2: "+spielfeld.getKlickSpalte2());
+        if(platziereSchiffe == true)
+        {
+            if(spielfeld.getKlickSpalte1() == spielfeld.getKlickSpalte2() || spielfeld.getKlickZeile1() == spielfeld.getKlickZeile2())
+            {
+                client.schiffEinfuegen(spielfeld.getKlickZeile1(), spielfeld.getKlickZeile1(),
+                                       spielfeld.getKlickSpalte1(), spielfeld.getKlickSpalte2());
+            }
+            else
+            {
+                spielfeld.markiereNichts();
+            }
+        }
+        else
+        {
+            if(spielfeld.getKlickZeile1() == spielfeld.getKlickZeile2() && spielfeld.getKlickSpalte1() == spielfeld.getKlickSpalte2())
+            {
+                client.schießen(spielfeld.getKlickZeile1(), spielfeld.getKlickSpalte1());
+            }
+            else
+            {
+                spielfeld.markiereNichts();
+            }
+        }
     }
 
     /************
@@ -73,27 +99,40 @@ public class SchiffeVersenkenView extends EBAnwendung {
         zeilenbereichMeldung.haengeAn(pMeldung);
     }
 
-    public void anmeldungErfolgreich() {
-        //todo
+    public void anmeldungErfolgreich()
+    {
+        knopfAnmeldung.deaktiviere();
     }
 
     public void startSchiffeSetzen()
     {
-
+        platziereSchiffe = true;
+        zeigeMeldung("Bitte platzieren Sie Ihre Schiffe.");
+        spielfeld.aktiviere();
     }
+
 
     public void beginneZug()
     {
-
+        platziereSchiffe = false;
+        zeigeMeldung("Ihr Zug beginnt.");
+        spielfeld.aktiviere();
     }
 
     public void ende()
     {
-
+        zeigeMeldung("Ihr  Zug ist zu Ende.");
+        spielfeld.deaktiviere();
     }
 
-    public void zeigeSpielfeld(int [][] pSpielfeld)
+    public void zeigeSpielfeld(String [][] pSpielfeld)
     {
-
+        for(int i=0; i < spielfeld.hoehe(); i++)
+        {
+            for(int j=0; j < spielfeld.breite(); j++)
+            {
+                spielfeld.setzeInhaltAn( pSpielfeld[i][j], i, j);
+            }
+        }
     }
 }
