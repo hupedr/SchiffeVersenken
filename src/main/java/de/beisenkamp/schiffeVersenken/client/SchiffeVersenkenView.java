@@ -65,6 +65,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
         spielfeldGegner.setzeBearbeiterMarkierungGeaendert("bearbeiteSpielfeldGegnerKlick");
         spielfeldGegner.deaktiviere();
 
+
     }
     /**********************
      * Ereignisbearbeiter *
