@@ -43,6 +43,11 @@ public class SchiffeVersenkenClient extends Client {
                 if (nachrichtTeile[1].equals(Protocol.OK))
                 {
                     view.zeigeMeldung(nachrichtTeile[2]);
+                    String [] meldungTeile = nachrichtTeile[2].split(" ");
+                    if (meldungTeile[1].equals("0"))
+                    {
+                        view.endeSchiffesetzen();
+                    }
                 }
                 else if (nachrichtTeile[1].equals(Protocol.ERROR))
                 {
@@ -67,10 +72,11 @@ public class SchiffeVersenkenClient extends Client {
                 }
                 break;
             case Protocol.SCHUSS:
-                view.zeigeMeldung(nachrichtTeile[1]);
+                view.zeigeMeldung("Gegner hat an der Stelle " + nachrichtTeile[1] + " einen Schuss gesetzt.");
                 break;
             case Protocol.ENDE:
                 view.ende();
+                view.zeigeMeldung(nachrichtTeile[1]);
                 break;
             case Protocol.SPIELFELD:
                 bearbeiteSendeSpielfeld(Arrays.copyOfRange(nachrichtTeile,1,nachrichtTeile.length));
