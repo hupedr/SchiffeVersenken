@@ -43,13 +43,15 @@ public class SchiffeVersenkenServer extends Server {
     {
         if(spieler1 != null && spieler2 != null && spieler1.name != null && spieler2.name != null)
         {
-            send(spieler1.ip,spieler1.port,Protocol.START + Protocol.SEPARATOR + spieler1.name);
+            send(spieler1.ip,spieler1.port,Protocol.START + Protocol.SEPARATOR + spieler2.name);
+            send(spieler2.ip,spieler2.port,Protocol.START + Protocol.SEPARATOR + spieler1.name);
         }
     }
 
 
     public void SchiffePlatzieren(String pos1, String pos2, String pIP, int pPort)
     {
+
         Spieler dieserSpieler;
         if(pIP.equals(spieler1.ip) && spieler1.port == pPort)
         {
@@ -59,23 +61,22 @@ public class SchiffeVersenkenServer extends Server {
         {
             dieserSpieler = spieler2;
         }
-        int i = dieserSpieler.spielfeld.schiffPlatzieren(pos1,pos2);
-        if(i == 1)
-        {
-            System.out.println("Sending to client: SHIFF and SPIELFELD "+pIP+" "+pPort);
-            send(pIP,pPort,Protocol.SCHIFF+Protocol.SEPARATOR+Protocol.OK+Protocol.SEPARATOR+"Noch <"+ (10-dieserSpieler.spielfeld.anzahlSchiffe)+"> Schiffe setzen.");
-            send(pIP,pPort, Protocol.SPIELFELD+Protocol.SEPARATOR+dieserSpieler.spielfeld.kodiereSpielfeld(true));
-            System.out.println("DONE");
-        }
+        if(dieserSpieler.spielfeld.anzahlSchiffe < 10) {
+            int i = dieserSpieler.spielfeld.schiffPlatzieren(pos1, pos2);
+            if (i == 1) {
+                System.out.println("Sending to client: SHIFF and SPIELFELD " + pIP + " " + pPort);
+                send(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.OK + Protocol.SEPARATOR + "Noch " + (10 - dieserSpieler.spielfeld.anzahlSchiffe) + " Schiffe setzen.");
+                send(pIP, pPort, Protocol.SPIELFELD + Protocol.SEPARATOR + dieserSpieler.spielfeld.kodiereSpielfeld(true));
+                System.out.println("DONE");
+            }
 
-        if (i == 2)
-        {
-            send(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Platz bereits belegt.");
-        }
+            if (i == 2) {
+                send(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Platz bereits belegt.");
+            }
 
-        if(i==3)
-        {
-            send(pIP,pPort,Protocol.SCHIFF+Protocol.SEPARATOR+Protocol.ERROR+Protocol.SEPARATOR+"Größe nicht erlaubt");
+            if (i == 3) {
+                send(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Größe nicht erlaubt");
+            }
         }
 
 
@@ -118,26 +119,28 @@ public class SchiffeVersenkenServer extends Server {
            dieserSpieler = spieler2;
            andererSpieler = spieler1;
         }
-        int i = dieserSpieler.spielfeld.verarbeiteSchuss(pos.charAt(0),pos.charAt(2));
+        int i = dieserSpieler.spielfeld.verarbeiteSchuss(Spielfeld.getPositionX(pos),Spielfeld.getPositionY(pos));
         if(i == 1)
         {
-            send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.VERSENKT+Protocol.SEPARATOR+"Noch <"+(10-dieserSpieler.spielfeld.anzahlSchiffe)+"> Schiffe übrig.");
+            send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.VERSENKT+Protocol.SEPARATOR+"Noch "+(10-dieserSpieler.spielfeld.anzahlSchiffe)+" Schiffe übrig.");
             send(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+"<"+pos+">");
+            send(andererSpieler.ip,andererSpieler.port, Protocol.SPIELFELD + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(true));
+            send(ip,port,Protocol.SPIELFELD_GEGNER + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(false));
             endeTesten();
         }
         else
         {
             if(i==2)
             {
-                send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.JA+Protocol.SEPARATOR+"Noch <"+(10-dieserSpieler.spielfeld.anzahlSchiffe)+"> Schiffe übrig.");
+                send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.JA+Protocol.SEPARATOR+"Noch "+(10-dieserSpieler.spielfeld.anzahlSchiffe)+" Schiffe übrig.");
                 send(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+"<"+pos+">");
             }
             else
             {
                 if(i==3)
                 {
-                    send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.NEIN+Protocol.SEPARATOR+"Noch <"+(10-dieserSpieler.spielfeld.anzahlSchiffe)+"> Schiffe übrig.");
-                    send(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+"<"+pos+">");
+                    send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.NEIN+Protocol.SEPARATOR+"Noch "+(10-dieserSpieler.spielfeld.anzahlSchiffe)+" Schiffe übrig.");
+                    send(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+""+pos+"");
                 }
             }
         }
