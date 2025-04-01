@@ -15,7 +15,7 @@ public class Spielfeld extends Tabelle {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                if(istAktiv()) {
+                if(istAktiv() && klickZeile1>=1 && klickZeile2>=1 && klickSpalte1>=2 && klickSpalte2>=2) {
                     view.bearbeiteSpielfeldKlick();
                 }
             }
@@ -36,6 +36,7 @@ public class Spielfeld extends Tabelle {
 
     @Override
     protected void markierungGeaendert() {
+        //System.out.println("Markierung Geändert");
         klickZeile1 = 0;
         klickSpalte1 = 0;
         klickZeile2 = 0;
@@ -65,7 +66,7 @@ public class Spielfeld extends Tabelle {
     }
 
     public int getKlickSpalte1() {
-        return klickSpalte1-1;
+        return klickSpalte1;
     }
 
     public int getKlickZeile2() {
@@ -73,7 +74,7 @@ public class Spielfeld extends Tabelle {
     }
 
     public int getKlickSpalte2() {
-        return klickSpalte2-1;
+        return klickSpalte2;
     }
 
 }
