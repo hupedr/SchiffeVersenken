@@ -134,8 +134,12 @@ public class SchiffeVersenkenView extends EBAnwendung {
         spielfeld.aktiviere();
     }
 
+    public void endeSchiffesetzen()
+    {
+        spielfeld.deaktiviere();//neu
+    }
 
-    public void beginneZug()
+    public void beginneZug()//d
     {
         platziereSchiffe = false;
         zeigeMeldung("Ihr Zug beginnt.");
