@@ -36,7 +36,7 @@ public class SchiffeVersenkenClient extends Client {
                 break;
             case Protocol.START:
                 view.startSchiffeSetzen();
-                view.zeigeMeldung(nachrichtTeile[2]);
+                view.zeigeMeldung("Spiel startet gegen Spieler: "+nachrichtTeile[1]);
                 break;
             case Protocol.SCHIFF:
                 if (nachrichtTeile[1].equals(Protocol.OK))
@@ -74,22 +74,34 @@ public class SchiffeVersenkenClient extends Client {
             case Protocol.SPIELFELD:
                 bearbeiteSendeSpielfeld(Arrays.copyOfRange(nachrichtTeile,1,nachrichtTeile.length));
                 break;
+            case Protocol.SPIELFELD_GEGNER:
+                bearbeiteSendeSpielfeldGegner(Arrays.copyOfRange(nachrichtTeile,1,nachrichtTeile.length));
+                break;
         }
     }
 
     private void bearbeiteSendeSpielfeld(String [] pSpielfeld)
     {
+        view.zeigeSpielfeld(dekodiereSpielfeld(pSpielfeld));
+    }
+
+    private void bearbeiteSendeSpielfeldGegner(String [] pSpielfeld)
+    {
+        view.zeigeSpielfeldGegner(dekodiereSpielfeld(pSpielfeld));
+    }
+
+    private String[][] dekodiereSpielfeld(String[] pSpielfeld) {
         String [][] spielfeld = new String[pSpielfeld.length][pSpielfeld.length];
         for (int i = 0; i < pSpielfeld.length; i++)
         {
-            String [] spielfeldZeile = pSpielfeld [i].split("|");
+            String [] spielfeldZeile = pSpielfeld [i].split("\\|");
             for (int j = 0; j < spielfeldZeile.length; j++)
             {
                 spielfeld [i][j] = spielfeldZeile[j];
             }
 
         }
-        view.zeigeSpielfeld(spielfeld);
+        return spielfeld;
     }
 
     public void schießen(int pX, int pY)
