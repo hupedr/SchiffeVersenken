@@ -101,7 +101,7 @@
                                 <manifest>
                                     <addClasspath>true</addClasspath>
                                     <classpathPrefix>lib/</classpathPrefix>
-                                    <mainClass>de.beisenkamp.schiffeVersenken.server.SchiffeVersenkenServer</mainClass>
+                                    <mainClass>de.beisenkamp.schiffeVersenken.server.SchiffeVersenkenServerView</mainClass>
                                 </manifest>
                             </archive>
                             <finalName>SchiffeVersenkenServer</finalName>
