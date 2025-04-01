@@ -15,7 +15,7 @@ public class SchiffeVersenkenServerView extends EBAnwendung {
 
     public SchiffeVersenkenServerView(int pBreite, int pHoehe) {
         super(pBreite, pHoehe);
-        this.server = new SchiffeVersenkenServer(81);
+        this.server = new SchiffeVersenkenServer(9981);
         hatBildschirm.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

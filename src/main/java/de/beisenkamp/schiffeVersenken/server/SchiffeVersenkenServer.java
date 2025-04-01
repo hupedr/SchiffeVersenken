@@ -15,6 +15,7 @@ public class SchiffeVersenkenServer extends Server {
     public SchiffeVersenkenServer(int pPort)
     {
         super(pPort);
+        System.out.println("Starting server on "+pPort);
     }
 
     public void User(String name, String ip, int port)

@@ -15,6 +15,7 @@ public class SchiffeVersenkenClient extends Client {
     public SchiffeVersenkenClient(String pServerIP, int pServerPort, SchiffeVersenkenView pView) {
         super(pServerIP, pServerPort);
         view = pView;
+        System.out.println("Starting client, connecting to: "+pServerIP+" : "+pServerPort);
     }
 
     @Override
