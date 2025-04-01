@@ -75,7 +75,7 @@ public class Spielfeld
     public int verarbeiteSchuss(int pX, int pY)
     {
         //Rückgabewert: 1=versnkt, 2= getroffen, 3= nicht getroffen
-
+        System.out.println("Schuss bei"+pX+"//"+pY);
         schiffliste.toFirst();
         schussliste.append(pX+"|"+pY); //fügt den Schuss zur Schussliste hinzu
         while(schiffliste.hasAccess())
@@ -123,6 +123,7 @@ public class Spielfeld
             int x = getPositionX(schussliste.getContent());
             int y = getPositionX(schussliste.getContent());
             feld[x][y] = 'x';
+            schussliste.next();
         }
 
         schiffliste.toFirst();
@@ -168,12 +169,12 @@ public class Spielfeld
         return code;
     }
 
-    private int getPositionX(String pPosition) {
+    public static int getPositionX(String pPosition) {
         String[] pos = pPosition.split("\\|");
         return Integer.parseInt(pos[0]);
     }
 
-    private int getPositionY(String pPosition) {
+    public static int getPositionY(String pPosition) {
         String[] pos = pPosition.split("\\|");
         return Integer.parseInt(pos[1]);
     }
