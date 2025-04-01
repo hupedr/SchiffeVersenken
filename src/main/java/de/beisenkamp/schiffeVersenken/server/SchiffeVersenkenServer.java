@@ -1,4 +1,5 @@
 package de.beisenkamp.schiffeVersenken.server;
+
 import de.beisenkamp.schiffeVersenken.Protocol;
 import nrw.abiturklassen.netz.Server;
 
@@ -14,20 +15,17 @@ public class SchiffeVersenkenServer extends Server {
     public SchiffeVersenkenServer(int pPort)
     {
         super(pPort);
+        System.out.println("Starting server on "+pPort);
     }
-
-    public static void main(String[] args)
-    {
-
-    }
-
 
     public void User(String name, String ip, int port)
     {
-        if(spieler1.name.equals(name) && !spieler2.name.equals(name))
-        {
+        if((spieler1 != null && name.equals(spieler1.name))
+                || (spieler2 != null && name.equals(spieler2.name))) {
+            send(ip, port, Protocol.ANMELDUNG + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Name bereits vergeben <" + name + ">.");
+        } else {
             Spieler dieserSpieler;
-            if (spieler1.port == port && spieler1.ip.equals(ip))
+            if (spieler1 != null && spieler1.port == port && ip.equals(spieler1.ip))
             {
                 dieserSpieler = spieler1;
             }
@@ -39,31 +37,21 @@ public class SchiffeVersenkenServer extends Server {
             send(dieserSpieler.ip, dieserSpieler.port, Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.OK+Protocol.SEPARATOR+"Angemeldet mit Benutzername <"+name+">.");
             Spielstart();
         }
-        else
-        {
-            send(ip,port,Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.ERROR+Protocol.SEPARATOR+"Name <"+name+"> ist bereits vergeben.");
-        }
     }
 
     public void Spielstart()
     {
-        if(spieler1.name != null && spieler2.name != null)
+        if(spieler1 != null && spieler2 != null && spieler1.name != null && spieler2.name != null)
         {
             send(spieler1.ip,spieler1.port,Protocol.START + Protocol.SEPARATOR + spieler1.name);
         }
     }
 
 
-
-
-
-
-
-
     public void SchiffePlatzieren(String pos1, String pos2, String pIP, int pPort)
     {
         Spieler dieserSpieler;
-        if(spieler1.ip.equals(pIP) && spieler1.port == pPort)
+        if(pIP.equals(spieler1.ip) && spieler1.port == pPort)
         {
             dieserSpieler = spieler1;
         }
@@ -74,7 +62,10 @@ public class SchiffeVersenkenServer extends Server {
         int i = dieserSpieler.spielfeld.schiffPlatzieren(pos1,pos2);
         if(i == 1)
         {
+            System.out.println("Sending to client: SHIFF and SPIELFELD "+pIP+" "+pPort);
             send(pIP,pPort,Protocol.SCHIFF+Protocol.SEPARATOR+Protocol.OK+Protocol.SEPARATOR+"Noch <"+ (10-dieserSpieler.spielfeld.anzahlSchiffe)+"> Schiffe setzen.");
+            send(pIP,pPort, Protocol.SPIELFELD+Protocol.SEPARATOR+dieserSpieler.spielfeld.kodiereSpielfeld(true));
+            System.out.println("DONE");
         }
 
         if (i == 2)
@@ -196,6 +187,8 @@ public class SchiffeVersenkenServer extends Server {
 
     public void processNewConnection(String pIP, int pPort)
     {
+        System.out.println("New Connection: "+pIP+" : "+pPort);
+        System.out.println("New Connection: "+spieler1+" : "+spieler2);
         if (spieler1 == null) {
             spieler1 = new Spieler(pIP, pPort);
         } else {
@@ -204,6 +197,7 @@ public class SchiffeVersenkenServer extends Server {
             } else {
                 //ERROR MESSAGE
                 send(pIP, pPort, Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.ERROR+Protocol.SEPARATOR+"Server ist voll.");
+                closeConnection(pIP, pPort);
             }
         }
     }
@@ -211,6 +205,7 @@ public class SchiffeVersenkenServer extends Server {
 
     public void processMessage(String pIP, int pPort, String message)
     {
+        System.out.println("New Message: "+pIP+" : "+pPort+" - "+message);
         String[] nachricht = message.split(Protocol.SEPARATOR);
         switch (nachricht[0]) {
             case Protocol.USER:
@@ -227,11 +222,12 @@ public class SchiffeVersenkenServer extends Server {
 
     public void processClosingConnection(String pIP, int pPort)
     {
-        if (spieler1.ip.equals(pIP) && spieler1.port == pPort)
+        System.out.println("Closing Connection: "+pIP+" : "+pPort);
+        if (spieler1 != null && spieler1.ip.equals(pIP) && spieler1.port == pPort)
         {
             spieler1 = null;
         }
-        if (spieler2.ip.equals(pIP) && spieler2.port == pPort)
+        if (spieler2 != null && spieler2.ip.equals(pIP) && spieler2.port == pPort)
         {
             spieler2 = null;
         }

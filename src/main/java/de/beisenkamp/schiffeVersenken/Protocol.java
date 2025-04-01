@@ -21,6 +21,7 @@ package de.beisenkamp.schiffeVersenken;
  *                                  | ENDE: <name> hat gewonnen.
  * ------------------------------------------------------------------------------------------------------
  *                                  | SPIELFELD:_|...|_:_|...|_:_|...|_:...:_|...|_:
+ *                                  | SPIELFELD_GEGNER:_|...|_:_|...|_:_|...|_:...:_|...|_:
  */
 
 public class Protocol
@@ -53,6 +54,8 @@ public class Protocol
     public static final String ENDE = "ENDE";
 
     public static final String SPIELFELD = "SPIELFELD";
+
+    public static final String SPIELFELD_GEGNER = "SPIELFELD_GEGNER";
 
     /**
      * Clientnachrichten

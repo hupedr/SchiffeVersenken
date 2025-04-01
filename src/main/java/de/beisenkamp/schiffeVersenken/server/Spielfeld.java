@@ -1,7 +1,10 @@
 package de.beisenkamp.schiffeVersenken.server;
+import de.beisenkamp.schiffeVersenken.Protocol;
 import nrw.abiturklassen.datenstruktur.linear.List;
 public class Spielfeld
 {
+    public static final int groesse = 12;
+
     List<Schiff> schiffliste;
     List<String> schussliste;
     int anzahlSchiffe;
@@ -18,24 +21,24 @@ public class Spielfeld
     public int schiffPlatzieren(String Position1, String Position2)
     {
         //Koordinaten in Int umwandeln ü
-        int pos1x = (int)Position1.charAt(0);
-        int pos1y = (int)Position1.charAt(2);
-        int pos2x = (int)Position2.charAt(0);
-        int pos2y = (int)Position2.charAt(2);
-        if(pos1x<pos2x)
-        //1.Koordinate = größte
+        int pos1x = getPositionX(Position1);
+        int pos1y = getPositionY(Position1);
+        int pos2x = getPositionX(Position2);
+        int pos2y = getPositionY(Position2);
+        if(pos1x>pos2x)
+        //1.Koordinate = kleinste
         {
-            pos1x = (int)Position2.charAt(0);
-            pos2x = (int)Position1.charAt(0);
+            pos1x = getPositionX(Position2);
+            pos2x = getPositionX(Position1);
         }
-        if(pos1y<pos2y)
+        if(pos1y>pos2y)
         {
-             pos1y = (int)Position2.charAt(2);
-             pos2y = (int)Position1.charAt(2);
+             pos1y = getPositionY(Position2);
+             pos2y = getPositionY(Position1);
         }
         if(pos1y==pos2y)
         {
-            int pLaenge = pos1x-pos2x+1;
+            int pLaenge = pos2x-pos1x+1;
             //Länge muss <= 5 sein
             if(pLaenge <= 5)
             {
@@ -50,7 +53,7 @@ public class Spielfeld
         }
         else if(pos1x==pos2x)
         {
-            int pLaenge = pos1y - pos2y + 1;
+            int pLaenge = pos2y - pos1y + 1;
             //Länge muss <= 5 sein
             if(pLaenge <= 5) {
                 schiffliste.append(new Schiff(pos1x, pos1y, pLaenge, false));
@@ -105,6 +108,74 @@ public class Spielfeld
 
         }
         return 3;
+    }
+
+    public String kodiereSpielfeld(boolean pAllesSichtbar) {
+        char[][] feld = new char[groesse][groesse];
+
+        for(int i = 0; i < groesse; i++) {
+            for(int j = 0; j < groesse; j++) {
+                feld[i][j] = ' ';
+            }
+        }
+        schussliste.toFirst();
+        while(schussliste.hasAccess()){
+            int x = getPositionX(schussliste.getContent());
+            int y = getPositionX(schussliste.getContent());
+            feld[x][y] = 'x';
+        }
+
+        schiffliste.toFirst();
+        while(schiffliste.hasAccess()) {
+            Schiff schiff = schiffliste.getContent();
+            int startX = schiff.getX();
+            int startY = schiff.getY();
+            System.out.println("x: "+startX+" y: "+startY+" Länge: "+schiff.getSchiffslaenge()+" Horizontal: "+schiff.horizontal);
+            if(schiff.horizontal) {
+                for(int i = 0; i < schiff.getSchiffslaenge(); i++) {
+                    if(schiff.versenkt) {
+                        feld[startY][startX+i] = 'X';
+                    } else if(schiff.getroffen[i]) {
+                        feld[startY][startX+i] = 216;
+                    } else if(pAllesSichtbar){
+                        feld[startY][startX+i] = 'O';
+                    }
+                }
+            } else {
+                for(int i = 0; i < schiff.getSchiffslaenge(); i++) {
+                    if(schiff.versenkt) {
+                        feld[startY+i][startX] = 'X';
+                    } else if(schiff.getroffen[i]) {
+                        feld[startY+i][startX] = 216;
+                    } else if(pAllesSichtbar){
+                        feld[startY+i][startX] = 'O';
+                    }
+                }
+            }
+            schiffliste.next();
+        }
+        String code = "";
+        for(int i = 0; i < groesse; i++) {
+            code = code + feld[i][0];
+            for(int j = 1; j < groesse; j++) {
+                code = code  + "|" + feld[i][j];
+            }
+            if(i < groesse - 1) {
+                code = code + Protocol.SEPARATOR;
+            }
+        }
+        System.out.println(code);
+        return code;
+    }
+
+    private int getPositionX(String pPosition) {
+        String[] pos = pPosition.split("\\|");
+        return Integer.parseInt(pos[0]);
+    }
+
+    private int getPositionY(String pPosition) {
+        String[] pos = pPosition.split("\\|");
+        return Integer.parseInt(pos[1]);
     }
 
 }
