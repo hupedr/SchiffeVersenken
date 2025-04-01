@@ -18,14 +18,14 @@ public class SchiffeVersenkenView extends EBAnwendung {
 
     private SchiffeVersenkenClient client;
     private final ClientConfig config;
-
     private final Knopf knopfVerbinden;
     private final Spielfeld spielfeld, spielfeldGegner;
     private final Zeilenbereich zeilenbereichMeldung;
     private final Etikett etikettBenutzername;
     private final Textfeld textfeldBenutzername;
     private final Knopf knopfAnmeldung;
-
+    private final Etikett etikettÜberschrift1;
+    private final Etikett etikettÜberschrift2;
     private boolean platziereSchiffe;
 
     public SchiffeVersenkenView(int pBreite, int pHoehe, ClientConfig pConfig) {
@@ -54,10 +54,14 @@ public class SchiffeVersenkenView extends EBAnwendung {
         zeilenbereichMeldung = new Zeilenbereich(10, 50, 300, 100, "");
         zeilenbereichMeldung.deaktiviere();
 
-        spielfeld = new Spielfeld(320, 50, 22, 12, 12, this);
+        etikettÜberschrift1 = new Etikett(235,55,200,50,"Eigenes Spielfeld");
+        etikettÜberschrift2 = new Etikett(770,55,200,50,"Gegnerisches Spielfeld");
+
+
+        spielfeld = new Spielfeld(20, 120, 40, 12, 12, this);
         spielfeld.setzeBearbeiterMarkierungGeaendert("bearbeiteSpielfeldKlick");
         spielfeld.deaktiviere();
-        spielfeldGegner = new Spielfeld(700, 50, 22, 12, 12, this);
+        spielfeldGegner = new Spielfeld(605, 120, 40, 12, 12, this);
         spielfeldGegner.setzeBearbeiterMarkierungGeaendert("bearbeiteSpielfeldGegnerKlick");
         spielfeldGegner.deaktiviere();
 
@@ -78,7 +82,8 @@ public class SchiffeVersenkenView extends EBAnwendung {
         }
     }
 
-    public void bearbeiteAnmeldung() {
+    public void bearbeiteAnmeldung()
+    {
         client.meldeAn(textfeldBenutzername.inhaltAlsText());
     }
 
@@ -94,7 +99,8 @@ public class SchiffeVersenkenView extends EBAnwendung {
         spielfeld.markiereNichts();
     }
 
-    public void bearbeiteSpielfeldGegnerKlick() {
+    public void bearbeiteSpielfeldGegnerKlick()
+    {
         if(spielfeldGegner.getKlickZeile1() == spielfeldGegner.getKlickZeile2() && spielfeldGegner.getKlickSpalte1() == spielfeldGegner.getKlickSpalte2())
         {
             client.schießen(spielfeldGegner.getKlickSpalte1()-2,spielfeldGegner.getKlickZeile1()-1);
@@ -110,7 +116,8 @@ public class SchiffeVersenkenView extends EBAnwendung {
          * Methoden *
          ************/
 
-    public void zeigeMeldung(String pMeldung) {
+    public void zeigeMeldung(String pMeldung)
+    {
         zeilenbereichMeldung.haengeAn(pMeldung);
     }
 
@@ -136,7 +143,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
 
     public void ende()
     {
-        zeigeMeldung("Ihr  Zug ist zu Ende.");
+        zeigeMeldung("Das Spiel ist hiermit offiziell beendet.");
         spielfeld.deaktiviere();
     }
 
