@@ -109,6 +109,7 @@ public class SchiffeVersenkenServer extends Server {
     {
         Spieler dieserSpieler;
         Spieler andererSpieler;
+        System.out.println(pos);
         if(spieler1.ip.equals(ip) && spieler1.port == port)
         {
             dieserSpieler = spieler1;
