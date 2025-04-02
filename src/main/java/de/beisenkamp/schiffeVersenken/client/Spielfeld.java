@@ -1,25 +1,21 @@
 package de.beisenkamp.schiffeVersenken.client;
 
+import sum.ereignis.Ereignisanwendung;
 import sum.komponenten.Tabelle;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class Spielfeld extends Tabelle {
 
     private int klickZeile1, klickSpalte1, klickZeile2, klickSpalte2;
+    private SchiffeVersenkenView view;
 
     public Spielfeld(double pLinks, double pOben, int pZellGroesse, int pZeilen, int pSpalten, SchiffeVersenkenView view) {
         super(pLinks, pOben, pZellGroesse*(pSpalten+2), pZellGroesse*(pZeilen+2), pZeilen, pSpalten+1);
-        hatComponent.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                super.mouseReleased(e);
-                if(istAktiv() && klickZeile1>=1 && klickZeile2>=1 && klickSpalte1>=2 && klickSpalte2>=2) {
-                    view.bearbeiteSpielfeldKlick();
-                }
-            }
-        });
+        this.view = view;
         for(int i = 1; i <= spaltenanzahl(); i++) {
             setzeSpaltenbreite(pZellGroesse);
             if(i == 1) {
@@ -36,7 +32,7 @@ public class Spielfeld extends Tabelle {
 
     @Override
     protected void markierungGeaendert() {
-        //System.out.println("Markierung Geändert");
+        System.out.println("Markierung Geändert");
         klickZeile1 = 0;
         klickSpalte1 = 0;
         klickZeile2 = 0;
@@ -77,4 +73,23 @@ public class Spielfeld extends Tabelle {
         return klickSpalte2;
     }
 
+    @Override
+    public void setzeBearbeiterMarkierungGeaendert(String pBearbeiter) {
+        System.out.println("Setzte Bearbeiter: "+pBearbeiter);
+        hatComponent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                if(istAktiv() && klickZeile1>=1 && klickZeile2>=1 && klickSpalte1>=2 && klickSpalte2>=2) {
+                    try {
+                        Class sumEreignis = view.getClass();
+                        Method methode = sumEreignis.getMethod(pBearbeiter, (Class[]) null);
+                        methode.invoke(view, (Object[]) null);
+                    } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+    }
 }

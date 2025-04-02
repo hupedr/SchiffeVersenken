@@ -121,13 +121,11 @@ public class SchiffeVersenkenServer extends Server {
            andererSpieler = spieler1;
         }
         int i = dieserSpieler.spielfeld.verarbeiteSchuss(Spielfeld.getPositionX(pos),Spielfeld.getPositionY(pos));
+        System.out.println("Schuss Ergebnis: "+i);
         if(i == 1)
         {
             send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.VERSENKT+Protocol.SEPARATOR+"Noch "+(10-dieserSpieler.spielfeld.anzahlSchiffe)+" Schiffe übrig.");
             send(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+"<"+pos+">");
-            send(andererSpieler.ip,andererSpieler.port, Protocol.SPIELFELD + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(true));
-            send(ip,port,Protocol.SPIELFELD_GEGNER + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(false));
-            endeTesten();
         }
         else
         {
@@ -145,6 +143,10 @@ public class SchiffeVersenkenServer extends Server {
                 }
             }
         }
+        send(andererSpieler.ip,andererSpieler.port, Protocol.SPIELFELD + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(true));
+        send(ip,port,Protocol.SPIELFELD_GEGNER + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(false));
+        endeTesten();
+
         //Zug beendet
         Zug();
     }

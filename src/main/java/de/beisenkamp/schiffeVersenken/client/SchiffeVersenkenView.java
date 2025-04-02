@@ -111,6 +111,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
             spielfeldGegner.markiereNichts();
         }
         spielfeldGegner.markiereNichts();
+        spielfeldGegner.deaktiviere();
     }
 
         /************
@@ -143,7 +144,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
     {
         platziereSchiffe = false;
         zeigeMeldung("Ihr Zug beginnt.");
-        spielfeld.aktiviere();
+        spielfeldGegner.aktiviere();
     }
 
     public void ende()
