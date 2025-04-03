@@ -12,9 +12,12 @@ public class SchiffeVersenkenServer extends Server {
 
     Boolean Spieler1Zug = false;
 
-    public SchiffeVersenkenServer(int pPort)
+    private final SchiffeVersenkenServerView view;
+
+    public SchiffeVersenkenServer(SchiffeVersenkenServerView view, int pPort)
     {
         super(pPort);
+        this.view = view;
         System.out.println("Starting server on "+pPort);
     }
 
@@ -22,7 +25,7 @@ public class SchiffeVersenkenServer extends Server {
     {
         if((spieler1 != null && name.equals(spieler1.name))
                 || (spieler2 != null && name.equals(spieler2.name))) {
-            send(ip, port, Protocol.ANMELDUNG + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Name bereits vergeben <" + name + ">.");
+            sende(ip, port, Protocol.ANMELDUNG + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Name bereits vergeben <" + name + ">.");
         } else {
             Spieler dieserSpieler;
             if (spieler1 != null && spieler1.port == port && ip.equals(spieler1.ip))
@@ -34,7 +37,7 @@ public class SchiffeVersenkenServer extends Server {
                 dieserSpieler = spieler2;
             }
             dieserSpieler.setName(name);
-            send(dieserSpieler.ip, dieserSpieler.port, Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.OK+Protocol.SEPARATOR+"Angemeldet mit Benutzername <"+name+">.");
+            sende(dieserSpieler.ip, dieserSpieler.port, Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.OK+Protocol.SEPARATOR+"Angemeldet mit Benutzername <"+name+">.");
             Spielstart();
         }
     }
@@ -43,8 +46,8 @@ public class SchiffeVersenkenServer extends Server {
     {
         if(spieler1 != null && spieler2 != null && spieler1.name != null && spieler2.name != null)
         {
-            send(spieler1.ip,spieler1.port,Protocol.START + Protocol.SEPARATOR + spieler2.name);
-            send(spieler2.ip,spieler2.port,Protocol.START + Protocol.SEPARATOR + spieler1.name);
+            sende(spieler1.ip,spieler1.port,Protocol.START + Protocol.SEPARATOR + spieler2.name);
+            sende(spieler2.ip,spieler2.port,Protocol.START + Protocol.SEPARATOR + spieler1.name);
         }
     }
 
@@ -61,21 +64,21 @@ public class SchiffeVersenkenServer extends Server {
         {
             dieserSpieler = spieler2;
         }
-        if(dieserSpieler.spielfeld.anzahlSchiffe < 10) {
+        if(dieserSpieler.spielfeld.alleSchiffe() < 10) {
             int i = dieserSpieler.spielfeld.schiffPlatzieren(pos1, pos2);
             if (i == 1) {
                 System.out.println("Sending to client: SHIFF and SPIELFELD " + pIP + " " + pPort);
-                send(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.OK + Protocol.SEPARATOR + "Noch " + (10 - dieserSpieler.spielfeld.anzahlSchiffe) + " Schiffe setzen.");
-                send(pIP, pPort, Protocol.SPIELFELD + Protocol.SEPARATOR + dieserSpieler.spielfeld.kodiereSpielfeld(true));
+                sende(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.OK + Protocol.SEPARATOR + "Noch " + (10 - dieserSpieler.spielfeld.alleSchiffe()) + " Schiffe setzen.");
+                sende(pIP, pPort, Protocol.SPIELFELD + Protocol.SEPARATOR + dieserSpieler.spielfeld.kodiereSpielfeld(true));
                 System.out.println("DONE");
             }
 
             if (i == 2) {
-                send(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Platz bereits belegt.");
+                sende(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Platz bereits belegt.");
             }
 
             if (i == 3) {
-                send(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Größe nicht erlaubt");
+                sende(pIP, pPort, Protocol.SCHIFF + Protocol.SEPARATOR + Protocol.ERROR + Protocol.SEPARATOR + "Größe nicht erlaubt");
             }
         }
 
@@ -83,7 +86,7 @@ public class SchiffeVersenkenServer extends Server {
 
         //Alle schiffe gesetzt? Dann geht es los!
 
-        if(spieler1.spielfeld.anzahlSchiffe == 10 && spieler2.spielfeld.anzahlSchiffe == 10)
+        if(spieler1.spielfeld.alleSchiffe() == 10 && spieler2.spielfeld.alleSchiffe() == 10)
         {
             Zug();
         }
@@ -96,12 +99,12 @@ public class SchiffeVersenkenServer extends Server {
         if(!Spieler1Zug)
         {
             Spieler1Zug = true;
-            send(spieler1.ip,spieler1.port,Protocol.ZUG);
+            sende(spieler1.ip,spieler1.port,Protocol.ZUG);
         }
         else
         {
             Spieler1Zug = false;
-            send(spieler2.ip,spieler2.port,Protocol.ZUG);
+            sende(spieler2.ip,spieler2.port,Protocol.ZUG);
         }
     }
 
@@ -120,38 +123,38 @@ public class SchiffeVersenkenServer extends Server {
            dieserSpieler = spieler2;
            andererSpieler = spieler1;
         }
-        int i = dieserSpieler.spielfeld.verarbeiteSchuss(Spielfeld.getPositionX(pos),Spielfeld.getPositionY(pos));
+        int i = andererSpieler.spielfeld.verarbeiteSchuss(Spielfeld.getPositionX(pos),Spielfeld.getPositionY(pos));
         System.out.println("Schuss Ergebnis: "+i);
         if(i == 1)
         {
-            send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.VERSENKT+Protocol.SEPARATOR+"Noch "+(10-dieserSpieler.spielfeld.anzahlSchiffe)+" Schiffe übrig.");
-            send(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+"<"+pos+">");
+            sende(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.VERSENKT+Protocol.SEPARATOR+"Noch "+(andererSpieler.spielfeld.uebrigeSchiffe())+" Schiffe übrig.");
+            sende(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+"<"+pos+">");
         }
         else
         {
             if(i==2)
             {
-                send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.JA+Protocol.SEPARATOR+"Noch "+(10-dieserSpieler.spielfeld.anzahlSchiffe)+" Schiffe übrig.");
-                send(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+"<"+pos+">");
+                sende(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.JA+Protocol.SEPARATOR+"Noch "+(andererSpieler.spielfeld.uebrigeSchiffe())+" Schiffe übrig.");
+                sende(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+"<"+pos+">");
             }
             else
             {
                 if(i==3)
                 {
-                    send(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.NEIN+Protocol.SEPARATOR+"Noch "+(10-dieserSpieler.spielfeld.anzahlSchiffe)+" Schiffe übrig.");
-                    send(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+""+pos+"");
+                    sende(ip,port,Protocol.TREFFER+Protocol.SEPARATOR+Protocol.NEIN+Protocol.SEPARATOR+"Noch "+(andererSpieler.spielfeld.uebrigeSchiffe())+" Schiffe übrig.");
+                    sende(andererSpieler.ip,andererSpieler.port,Protocol.SCHUSS+Protocol.SEPARATOR+""+pos+"");
                 }
             }
         }
-        send(andererSpieler.ip,andererSpieler.port, Protocol.SPIELFELD + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(true));
-        send(ip,port,Protocol.SPIELFELD_GEGNER + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(false));
-        endeTesten();
-
+        sende(andererSpieler.ip,andererSpieler.port, Protocol.SPIELFELD + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(true));
+        sende(ip,port,Protocol.SPIELFELD_GEGNER + Protocol.SEPARATOR + andererSpieler.spielfeld.kodiereSpielfeld(false));
         //Zug beendet
-        Zug();
+        if(!endeTesten()) {
+            Zug();
+        }
     }
 
-    public void endeTesten()
+    public boolean endeTesten()
     {
         int versenkteSchiffe = 0;
         spieler1.spielfeld.schiffliste.toFirst();
@@ -167,7 +170,8 @@ public class SchiffeVersenkenServer extends Server {
         }
         if(versenkteSchiffe == 10)
         {
-            ende(spieler1);
+            ende(spieler2);
+            return true;
         }
         //Spieler 2
         versenkteSchiffe = 0;
@@ -181,8 +185,10 @@ public class SchiffeVersenkenServer extends Server {
         }
         if(versenkteSchiffe == 10)
         {
-            ende(spieler2);
+            ende(spieler1);
+            return true;
         }
+        return false;
     }
 
     public void ende(Spieler pSpieler)
@@ -202,7 +208,7 @@ public class SchiffeVersenkenServer extends Server {
                 spieler2 = new Spieler(pIP, pPort);
             } else {
                 //ERROR MESSAGE
-                send(pIP, pPort, Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.ERROR+Protocol.SEPARATOR+"Server ist voll.");
+                sende(pIP, pPort, Protocol.ANMELDUNG+Protocol.SEPARATOR+Protocol.ERROR+Protocol.SEPARATOR+"Server ist voll.");
                 closeConnection(pIP, pPort);
             }
         }
@@ -228,6 +234,7 @@ public class SchiffeVersenkenServer extends Server {
 
     public void processClosingConnection(String pIP, int pPort)
     {
+        view.melde("Beende Client-Verbindung: "+pIP+" : "+pPort);
         System.out.println("Closing Connection: "+pIP+" : "+pPort);
         if (spieler1 != null && spieler1.ip.equals(pIP) && spieler1.port == pPort)
         {
@@ -237,5 +244,11 @@ public class SchiffeVersenkenServer extends Server {
         {
             spieler2 = null;
         }
+    }
+
+    private void sende(String pIP, int pPort, String pMessage) {
+        send(pIP, pPort, pMessage);
+        System.out.println("send ("+pIP+":"+pPort+") -> "+pMessage);
+        view.melde("Sende ("+pIP+":"+pPort+") -> "+pMessage);
     }
 }

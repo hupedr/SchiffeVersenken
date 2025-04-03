@@ -7,7 +7,8 @@ public class Spielfeld
 
     List<Schiff> schiffliste;
     List<String> schussliste;
-    int anzahlSchiffe;
+    private int anzahlSchiffe;
+
     public Spielfeld()
     {
         schiffliste = new List<>();
@@ -83,7 +84,7 @@ public class Spielfeld
             Schiff schiff = schiffliste.getContent();
             if(schiff.horizontal)
             {
-                if(schiff.getX()>=pX && schiff.getX()-(schiff.getSchiffslaenge()-1)<=pX && pY == schiff.getY())
+                if(schiff.getX()<=pX && schiff.getX()+(schiff.getSchiffslaenge()-1)>=pX && pY == schiff.getY())
                 {
                     schiff.treffer(pX, pY);
                     if(schiff.versenkt)
@@ -95,7 +96,7 @@ public class Spielfeld
             }
             else
             {
-                if(schiff.getY()>=pY && schiff.getY()-(schiff.getSchiffslaenge()-1)<=pY && pX == schiff.getX())
+                if(schiff.getY()<=pY && schiff.getY()+(schiff.getSchiffslaenge()-1)>=pY && pX == schiff.getX())
                 {
                     schiff.treffer(pX, pY);
                     if(schiff.versenkt)
@@ -110,19 +111,36 @@ public class Spielfeld
         return 3;
     }
 
+    public int alleSchiffe() {
+        return anzahlSchiffe;
+    }
+
+    public int uebrigeSchiffe() {
+        schiffliste.toFirst();
+        int ergebnis = 0;
+        while(schiffliste.hasAccess()) {
+            if(!schiffliste.getContent().versenkt()) {
+                ergebnis++;
+            }
+            schiffliste.next();
+        }
+        return ergebnis;
+    }
+
     public String kodiereSpielfeld(boolean pAllesSichtbar) {
-        char[][] feld = new char[groesse][groesse];
+        String[][] feld = new String[groesse][groesse];
 
         for(int i = 0; i < groesse; i++) {
             for(int j = 0; j < groesse; j++) {
-                feld[i][j] = ' ';
+                feld[i][j] = "   ";
             }
         }
         schussliste.toFirst();
         while(schussliste.hasAccess()){
             int x = getPositionX(schussliste.getContent());
-            int y = getPositionX(schussliste.getContent());
-            feld[x][y] = 'x';
+            int y = getPositionY(schussliste.getContent());
+            System.out.println("Schuss eintragen: "+x+" | "+ y);
+            feld[y][x] = " + ";
             schussliste.next();
         }
 
@@ -135,21 +153,21 @@ public class Spielfeld
             if(schiff.horizontal) {
                 for(int i = 0; i < schiff.getSchiffslaenge(); i++) {
                     if(schiff.versenkt) {
-                        feld[startY][startX+i] = 'X';
+                        feld[startY][startX+i] = " # ";
                     } else if(schiff.getroffen[i]) {
-                        feld[startY][startX+i] = 216;
+                        feld[startY][startX+i] = " "+((char)216)+" ";
                     } else if(pAllesSichtbar){
-                        feld[startY][startX+i] = 'O';
+                        feld[startY][startX+i] = " O ";
                     }
                 }
             } else {
                 for(int i = 0; i < schiff.getSchiffslaenge(); i++) {
                     if(schiff.versenkt) {
-                        feld[startY+i][startX] = 'X';
+                        feld[startY+i][startX] = " # ";
                     } else if(schiff.getroffen[i]) {
-                        feld[startY+i][startX] = 216;
+                        feld[startY+i][startX] = " "+((char)216)+" ";
                     } else if(pAllesSichtbar){
-                        feld[startY+i][startX] = 'O';
+                        feld[startY+i][startX] = " O ";
                     }
                 }
             }

@@ -4,7 +4,7 @@ public class Schiff {
     private int schiffslaenge;
     private int x;
     private int y;
-    boolean getroffen[];
+    boolean[] getroffen;
     boolean horizontal;
     boolean versenkt;
 
@@ -17,6 +17,9 @@ public class Schiff {
         horizontal=pHorizontal;
         getroffen = new boolean[pLaenge];
         versenkt= false;
+        for(int i = 0; i < pLaenge; i++) {
+            getroffen[i] = false;
+        }
     }
 
     public int getY() {
@@ -30,24 +33,28 @@ public class Schiff {
     public int getSchiffslaenge() {
         return schiffslaenge;
     }
+
     //setzt die Arrayfelder
     public void treffer(int pX, int pY)
     {
         if(horizontal)
         {
-            int i= x-pX+1;
-            getroffen[schiffslaenge-i] =true;
+            int i= pX-x;
+            getroffen[i] =true;
+            System.out.println("treffer horizontal X: "+x+" pX: "+pX);
         }
         else
         {
-            int i= y-pY+1;
-            getroffen[schiffslaenge-i] =true;
+            int i= pY-y;
+            getroffen[i] =true;
+            System.out.println("treffer vertikal Y: "+y+" pY: "+pY);
         }
         versenkt = versenkt();
     }
 
     public boolean versenkt()
     {
+        System.out.println("Getroffen ARRAY: "+getroffen[0]);
         for(int i =0;  i < getroffen.length; i++ )
         {
             if(!getroffen[i])

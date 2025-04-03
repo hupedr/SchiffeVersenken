@@ -13,7 +13,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
 
     public static void main(String[] args) {
         ClientConfig config = new ClientConfig();
-        SchiffeVersenkenView view = new SchiffeVersenkenView(1200, 600, config);
+        SchiffeVersenkenView view = new SchiffeVersenkenView(1200, 1000, config);
     }
 
     private SchiffeVersenkenClient client;
@@ -24,12 +24,13 @@ public class SchiffeVersenkenView extends EBAnwendung {
     private final Etikett etikettBenutzername;
     private final Textfeld textfeldBenutzername;
     private final Knopf knopfAnmeldung;
+    private final Knopf knopfAbmeldung;
     private final Etikett etikettÜberschrift1;
     private final Etikett etikettÜberschrift2;
     private boolean platziereSchiffe;
 
     public SchiffeVersenkenView(int pBreite, int pHoehe, ClientConfig pConfig) {
-        super(pBreite, pHoehe);
+        super(pBreite, pHoehe, true);
         config = pConfig;
         hatBildschirm.addWindowListener(new WindowAdapter() {
             @Override
@@ -48,10 +49,15 @@ public class SchiffeVersenkenView extends EBAnwendung {
         knopfAnmeldung = new Knopf(140, 10, 120,30, "Anmeldung");
         knopfAnmeldung.setzeBearbeiterGeklickt("bearbeiteAnmeldung");
         knopfAnmeldung.deaktiviere();
+
+        knopfAbmeldung = new Knopf(530, 10, 120,30, "Abmeldung");
+        knopfAbmeldung.setzeBearbeiterGeklickt("bearbeiteAbmeldung");
+        knopfAbmeldung.deaktiviere();
+
         etikettBenutzername = new Etikett(270, 10, 80, 30, "Benutzername:");
         textfeldBenutzername = new Textfeld(360,10,150, 30, "");
 
-        zeilenbereichMeldung = new Zeilenbereich(10, 50, 300, 100, "");
+        zeilenbereichMeldung = new Zeilenbereich(10, 690, 800, 300, "");
         zeilenbereichMeldung.deaktiviere();
 
         etikettÜberschrift1 = new Etikett(235,55,200,50,"Eigenes Spielfeld");
@@ -80,7 +86,14 @@ public class SchiffeVersenkenView extends EBAnwendung {
         {
             knopfVerbinden.deaktiviere();
             knopfAnmeldung.aktiviere();
+            knopfAbmeldung.aktiviere();
         }
+    }
+
+    public void bearbeiteAbmeldung() {
+        client.meldeAb();
+        knopfAbmeldung.deaktiviere();
+        knopfVerbinden.aktiviere();
     }
 
     public void bearbeiteAnmeldung()

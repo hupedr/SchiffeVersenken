@@ -10,7 +10,7 @@ public class SchiffeVersenkenClient extends Client {
 
     private SchiffeVersenkenView view;
 
-    private boolean debug = true;
+    private boolean debug = false;
 
     public SchiffeVersenkenClient(String pServerIP, int pServerPort, SchiffeVersenkenView pView) {
         super(pServerIP, pServerPort);
@@ -124,6 +124,11 @@ public class SchiffeVersenkenClient extends Client {
     public void meldeAn(String pName)
     {
         this.send(Protocol.USER + Protocol.SEPARATOR + pName);
+    }
+
+    public void meldeAb() {
+        this.close();
+        view.zeigeMeldung("Verbindung zum Server getrennt.");
     }
 
 }
