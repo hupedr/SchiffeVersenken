@@ -89,6 +89,18 @@ public class SchiffeVersenkenView extends EBAnwendung {
     }
 
     public void bearbeiteSpielfeldKlick() {
+        if(this.platziereSchiffe)
+        {
+            bearbeiteEigenesSpielfeldKlick();
+        }
+        else
+        {
+           bearbeiteSpielfeldGegnerKlick();
+        }
+
+    }
+    public void bearbeiteEigenesSpielfeldKlick()
+    {
         // Ausgabe des angeklickten Feldes als Beispiel:
         System.out.println("Zeile1: "+(spielfeld.getKlickZeile1()-1)+" Spalte1: "+(spielfeld.getKlickSpalte1()-2));
         System.out.println("Zeile2: "+(spielfeld.getKlickZeile2()-1)+" Spalte2: "+(spielfeld.getKlickSpalte2()-2));
@@ -104,6 +116,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
     {
         if(spielfeldGegner.getKlickZeile1() == spielfeldGegner.getKlickZeile2() && spielfeldGegner.getKlickSpalte1() == spielfeldGegner.getKlickSpalte2())
         {
+            System.out.println("Zeile1: "+(spielfeld.getKlickZeile1()-2)+" Spalte1: "+(spielfeld.getKlickSpalte1()-1));
             client.schießen(spielfeldGegner.getKlickSpalte1()-2,spielfeldGegner.getKlickZeile1()-1);
         }
         else
@@ -143,7 +156,7 @@ public class SchiffeVersenkenView extends EBAnwendung {
     {
         platziereSchiffe = false;
         zeigeMeldung("Ihr Zug beginnt.");
-        spielfeld.aktiviere();
+        spielfeldGegner.aktiviere();
     }
 
     public void ende()

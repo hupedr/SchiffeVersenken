@@ -105,7 +105,7 @@ public class SchiffeVersenkenServer extends Server {
         }
     }
 
-    public void Schuss(String pos, String ip, int port)
+    public void schuss(String pos, String ip, int port)
     {
         Spieler dieserSpieler;
         Spieler andererSpieler;
@@ -219,7 +219,7 @@ public class SchiffeVersenkenServer extends Server {
                 SchiffePlatzieren(nachricht[1],nachricht[2],pIP,pPort);
                 break;
             case Protocol.SCHUSS:
-                Schuss(nachricht[1],pIP,pPort);
+                schuss(nachricht[1],pIP,pPort);
                 break;
         }
     }
