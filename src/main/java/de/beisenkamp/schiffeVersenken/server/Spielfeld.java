@@ -105,6 +105,7 @@ public class Spielfeld
                     return 2;
                 }
             }
+            schiffliste.next();
 
         }
         return 3;
