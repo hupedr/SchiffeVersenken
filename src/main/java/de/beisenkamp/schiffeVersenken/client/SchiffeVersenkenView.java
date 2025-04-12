@@ -159,6 +159,12 @@ public class SchiffeVersenkenView extends EBAnwendung {
         spielfeldGegner.aktiviere();
     }
 
+    public void beendeZug()
+    {
+        zeigeMeldung("Ihr Zug ist beendet");
+        spielfeldGegner.deaktiviere();
+    }
+
     public void ende()
     {
         zeigeMeldung("Das Spiel ist hiermit offiziell beendet.");

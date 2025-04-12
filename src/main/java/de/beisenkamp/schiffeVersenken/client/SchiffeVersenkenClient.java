@@ -70,6 +70,7 @@ public class SchiffeVersenkenClient extends Client {
                 {
                     view.zeigeMeldung(nachrichtTeile[2]);
                 }
+                view.beendeZug();
                 break;
             case Protocol.SCHUSS:
                 view.zeigeMeldung("Gegner hat an der Stelle " + nachrichtTeile[1] + " einen Schuss gesetzt.");

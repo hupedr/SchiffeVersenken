@@ -56,7 +56,6 @@ public class Protocol
     public static final String SPIELFELD = "SPIELFELD";
 
     public static final String SPIELFELD_GEGNER = "SPIELFELD_GEGNER";
-
     /**
      * Clientnachrichten
      */
