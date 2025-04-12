@@ -42,6 +42,33 @@ public class Spielfeld
             //Länge muss <= 5 sein
             if(pLaenge <= 5)
             {
+                schiffliste.toFirst();
+                while(schiffliste.hasAccess())
+                {
+                    Schiff schiff = schiffliste.getContent();
+                    if(!schiff.horizontal)
+                    {
+                        for(int i=pos1x;i<pos2x;i++) // i ist das Segment des neuen Schiffes, das überprüft wird
+                        {
+                            for(int j=schiff.getY(); j<schiff.getY()+schiff.getSchiffslaenge()-1; j++) //j ist die Y Koordinate des Schiffes, mit dem es verglichen werden soll
+                            {
+                                if (pos1y==j && i==schiff.getX())
+                                {
+                                    return 2; //Schiffe kreuzen sich
+                                }
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(!(schiff.getX()>pos2x||schiff.getX()+schiff.getSchiffslaenge()-1<pos1x))
+                        {
+                            return 2; //Schiffe liegen übereinander
+                        }
+                    }
+                    schiffliste.next();
+                }
                 schiffliste.append(new Schiff(pos1x, pos1y, pLaenge, true));
                 anzahlSchiffe++;
                 return 1;
@@ -56,6 +83,33 @@ public class Spielfeld
             int pLaenge = pos2y - pos1y + 1;
             //Länge muss <= 5 sein
             if(pLaenge <= 5) {
+                schiffliste.toFirst();
+                while(schiffliste.hasAccess())
+                {
+                    Schiff schiff = schiffliste.getContent();
+                    if(schiff.horizontal)
+                    {
+                        for(int i=pos1y;i<pos2y;i++) // i ist das Segment des neuen Schiffes, das überprüft wird
+                        {
+                            for(int j=schiff.getX(); j<schiff.getX()+schiff.getSchiffslaenge()-1; j++) //j ist die x Koordinate des Schiffes, mit dem es verglichen werden soll
+                            {
+                                if (pos1x==j && i==schiff.getY())
+                                {
+                                    return 2; //Schiffe kreuzen sich
+                                }
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(!(schiff.getY()>pos2y||schiff.getY()+schiff.getSchiffslaenge()-1<pos1y))
+                        {
+                            return 2; //Schiffe liegen übereinander
+                        }
+                    }
+                    schiffliste.next();
+                }
                 schiffliste.append(new Schiff(pos1x, pos1y, pLaenge, false));
                 anzahlSchiffe++;
                 return 1;
@@ -67,7 +121,7 @@ public class Spielfeld
         }
         else
         {
-            return 2;
+            return 3;
         }
 
     }
