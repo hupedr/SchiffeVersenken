@@ -40,7 +40,7 @@ public class Spielfeld
         {
             int pLaenge = pos2x-pos1x+1;
             //Länge muss <= 5 sein
-            if(pLaenge <= 5)
+            if(pLaenge <= 5 && pLaenge > 1)
             {
                 schiffliste.toFirst();
                 while(schiffliste.hasAccess())
