@@ -6,26 +6,41 @@ import sum.komponenten.Knopf;
 import sum.komponenten.Textfeld;
 import sum.komponenten.Zeilenbereich;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 public class SchiffeVersenkenView extends EBAnwendung {
 
     public static void main(String[] args) {
         ClientConfig config = new ClientConfig();
-        SchiffeVersenkenView view = new SchiffeVersenkenView(800, 600, config);
+        SchiffeVersenkenView view = new SchiffeVersenkenView(1200, 600, config);
     }
 
     private SchiffeVersenkenClient client;
     private final ClientConfig config;
-
     private final Knopf knopfVerbinden;
-    private final Spielfeld spielfeld;
+    private final Spielfeld spielfeld, spielfeldGegner;
     private final Zeilenbereich zeilenbereichMeldung;
     private final Etikett etikettBenutzername;
     private final Textfeld textfeldBenutzername;
     private final Knopf knopfAnmeldung;
+    private final Etikett etikettÜberschrift1;
+    private final Etikett etikettÜberschrift2;
+    private boolean platziereSchiffe;
 
     public SchiffeVersenkenView(int pBreite, int pHoehe, ClientConfig pConfig) {
         super(pBreite, pHoehe);
         config = pConfig;
+        hatBildschirm.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("Closing client");
+                if(client != null && client.isConnected()) {
+                    client.close();
+                }
+            }
+        });
+
 
         knopfVerbinden = new Knopf(10, 10, 120, 30, "Verbinden");
         knopfVerbinden.setzeBearbeiterGeklickt("bearbeiteVerbindeMitServer");
@@ -39,9 +54,17 @@ public class SchiffeVersenkenView extends EBAnwendung {
         zeilenbereichMeldung = new Zeilenbereich(10, 50, 300, 100, "");
         zeilenbereichMeldung.deaktiviere();
 
-        spielfeld = new Spielfeld(320, 50, 22, 12, 12, this);
+        etikettÜberschrift1 = new Etikett(235,55,200,50,"Eigenes Spielfeld");
+        etikettÜberschrift2 = new Etikett(770,55,200,50,"Gegnerisches Spielfeld");
+
+
+        spielfeld = new Spielfeld(20, 120, 40, 12, 12, this);
         spielfeld.setzeBearbeiterMarkierungGeaendert("bearbeiteSpielfeldKlick");
-        //spielfeld.deaktiviere();
+        spielfeld.deaktiviere();
+        spielfeldGegner = new Spielfeld(605, 120, 40, 12, 12, this);
+        spielfeldGegner.setzeBearbeiterMarkierungGeaendert("bearbeiteSpielfeldGegnerKlick");
+        spielfeldGegner.deaktiviere();
+
 
     }
     /**********************
@@ -52,48 +75,103 @@ public class SchiffeVersenkenView extends EBAnwendung {
         if(client != null && client.isConnected()) {
             client.close();
         }
-        SchiffeVersenkenClient client = new SchiffeVersenkenClient(config.getServerIp(), config.getServerPort(), this);
-        if(client.isConnected()) {
+        client = new SchiffeVersenkenClient(config.getServerIp(), config.getServerPort(), this);
+        if(client.isConnected())
+        {
             knopfVerbinden.deaktiviere();
             knopfAnmeldung.aktiviere();
         }
     }
 
-    public void bearbeiteSpielfeldKlick() {
-        // Ausgabe des angeklickten Feldes als Beispiel:
-        System.out.println("Zeile1: "+spielfeld.getKlickZeile1()+" Spalte1: "+spielfeld.getKlickSpalte1());
-        System.out.println("Zeile2: "+spielfeld.getKlickZeile2()+" Spalte2: "+spielfeld.getKlickSpalte2());
+    public void bearbeiteAnmeldung()
+    {
+        client.meldeAn(textfeldBenutzername.inhaltAlsText());
     }
 
-    /************
-     * Methoden *
-     ************/
+    public void bearbeiteSpielfeldKlick() {
+        // Ausgabe des angeklickten Feldes als Beispiel:
+        System.out.println("Zeile1: "+(spielfeld.getKlickZeile1()-1)+" Spalte1: "+(spielfeld.getKlickSpalte1()-2));
+        System.out.println("Zeile2: "+(spielfeld.getKlickZeile2()-1)+" Spalte2: "+(spielfeld.getKlickSpalte2()-2));
+        if(spielfeld.getKlickSpalte1() == spielfeld.getKlickSpalte2() || spielfeld.getKlickZeile1() == spielfeld.getKlickZeile2())
+        {
+            client.schiffEinfuegen(spielfeld.getKlickSpalte1()-2, spielfeld.getKlickZeile1()-1,
+                    spielfeld.getKlickSpalte2()-2, spielfeld.getKlickZeile2()-1);
+        }
+        spielfeld.markiereNichts();
+    }
 
-    public void zeigeMeldung(String pMeldung) {
+    public void bearbeiteSpielfeldGegnerKlick()
+    {
+        if(spielfeldGegner.getKlickZeile1() == spielfeldGegner.getKlickZeile2() && spielfeldGegner.getKlickSpalte1() == spielfeldGegner.getKlickSpalte2())
+        {
+            client.schießen(spielfeldGegner.getKlickSpalte1()-2,spielfeldGegner.getKlickZeile1()-1);
+        }
+        else
+        {
+            spielfeldGegner.markiereNichts();
+        }
+        spielfeldGegner.markiereNichts();
+    }
+
+        /************
+         * Methoden *
+         ************/
+
+    public void zeigeMeldung(String pMeldung)
+    {
         zeilenbereichMeldung.haengeAn(pMeldung);
     }
 
-    public void anmeldungErfolgreich() {
-        //todo
+    public void anmeldungErfolgreich()
+    {
+        knopfAnmeldung.deaktiviere();
     }
 
     public void startSchiffeSetzen()
     {
-
+        platziereSchiffe = true;
+        zeigeMeldung("Bitte platzieren Sie Ihre Schiffe.");
+        spielfeld.aktiviere();
     }
 
-    public void beginneZug()
+    public void endeSchiffesetzen()
     {
+        spielfeld.deaktiviere();//neu
+    }
 
+    public void beginneZug()//d
+    {
+        platziereSchiffe = false;
+        zeigeMeldung("Ihr Zug beginnt.");
+        spielfeld.aktiviere();
     }
 
     public void ende()
     {
-
+        zeigeMeldung("Das Spiel ist hiermit offiziell beendet.");
+        spielfeld.deaktiviere();
     }
 
-    public void zeigeSpielfeld(int [][] pSpielfeld)
+    public void zeigeSpielfeld(String [][] pSpielfeld)
     {
-
+        for(int i=0; i < pSpielfeld.length; i++)
+        {
+            for(int j=0; j < pSpielfeld.length; j++)
+            {
+                spielfeld.setzeInhaltAn( pSpielfeld[i][j], i+1, j+2);
+            }
+        }
     }
+
+    public void zeigeSpielfeldGegner(String [][] pSpielfeld)
+    {
+        for(int i=0; i < pSpielfeld.length; i++)
+        {
+            for(int j=0; j < pSpielfeld.length; j++)
+            {
+                spielfeldGegner.setzeInhaltAn( pSpielfeld[i][j], i+1, j+2);
+            }
+        }
+    }
+
 }
